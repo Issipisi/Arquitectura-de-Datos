@@ -17,36 +17,38 @@ query1 = """CREATE TABLE IF NOT EXISTS clientes_demograficos (
     telefono VARCHAR(20),
     direccion_postal VARCHAR(255),
     codigo_postal VARCHAR(10),
-    ciudad VARCHAR(50),
-    pais VARCHAR(50),
-    ocupacion VARCHAR(50),
-    nivel_educativo VARCHAR(50),
+    ciudad VARCHAR(300),
+    pais VARCHAR(300),
+    ocupacion VARCHAR(300),
+    nivel_educativo VARCHAR(200),
     ingresos DECIMAL(10, 2)
 )"""
 
 query2 = """CREATE TABLE IF NOT EXISTS clientes_psicograficos (
-    id_cliente INT PRIMARY KEY REFERENCES clientes_demograficos(id_cliente),
+    id_cliente SERIAL PRIMARY KEY,
     intereses_deportivos TEXT,
-    nivel_actividad_fisica VARCHAR(50),
-    estilo_vida VARCHAR(50),
+    nivel_actividad_fisica VARCHAR(300),
+    estilo_vida VARCHAR(300),
     valores_creencias TEXT,
-    personalidad VARCHAR(50)
+    personalidad VARCHAR(300),
+    FOREIGN KEY (id_cliente) REFERENCES clientes_demograficos(id_cliente)
 )"""
 
 query3 = """CREATE TABLE IF NOT EXISTS clientes_adicionales (
-    id_cliente INT PRIMARY KEY REFERENCES clientes_demograficos(id_cliente),
+    id_cliente SERIAL PRIMARY KEY,
     numero_identificacion_personal VARCHAR(20),
     fecha_registro_cliente DATE NOT NULL,
     fecha_ultima_actualizacion DATE,
-    consentimiento_datos_personales BOOLEAN NOT NULL DEFAULT false
+    consentimiento_datos_personales BOOLEAN NOT NULL DEFAULT false,
+    FOREIGN KEY (id_cliente) REFERENCES clientes_demograficos(id_cliente)
 )"""
 
 # Conexión a la base de datos en postgres
 connection = psycopg2.connect(
     user="taller2",
-    password="contraseña2024@",
+    password="joaquintorres1@",
     host="taller2clientes.postgres.database.azure.com",
-    #port="5432",
+    port="5432",
     database="core-clientes"
 )
 
@@ -60,6 +62,19 @@ def crear_tabla(query):
         print("Tabla creada con éxito")
     except Exception as e:
         print("Error al crear la tabla:", e)
+    finally:
+        cursor.close()
+
+# Función para obtener datos de una tabla
+def obtener_datos(tabla):
+    cursor = connection.cursor()
+    try:
+        cursor.execute(f"SELECT * FROM {tabla}")
+        datos = cursor.fetchall()
+        for dato in datos:
+            print(dato)
+    except Exception as e:
+        print("Error al obtener los datos:", e)
     finally:
         cursor.close()
 
@@ -120,9 +135,9 @@ def generar_datos_demograficos(num_registros):
 
         # Insertar datos en la base de datos
         query = """INSERT INTO clientes_demograficos 
-                   (nombre_completo, genero, fecha_nacimiento, edad, correo_electronico, telefono, direccion_postal, 
+                   (nombre_completo, genero, edad, correo_electronico, telefono, direccion_postal, 
                     codigo_postal, ciudad, pais, ocupacion, nivel_educativo, ingresos) 
-                   VALUES (%(nombre_completo)s, %(genero)s, %(fecha_nacimiento)s, %(edad)s, %(correo_electronico)s, %(telefono)s, %(direccion_postal)s,
+                   VALUES (%(nombre_completo)s, %(genero)s, %(edad)s, %(correo_electronico)s, %(telefono)s, %(direccion_postal)s,
                            %(codigo_postal)s, %(ciudad)s, %(pais)s, %(ocupacion)s, %(nivel_educativo)s, %(ingresos)s)"""
         
         try:
@@ -146,7 +161,7 @@ def generar_datos_clientes_psicograficos(num_registros):
     
     for _ in range(num_registros):
         # Generar datos psicográficos
-        id_cliente = fake.random_int(min=1, max=100)
+        # id_cliente = fake.random_int(min=1, max=100)
         intereses_deportivos = fake.random_element(['Fútbol', 'Baloncesto', 'Natación', 'Ciclismo', 'Running'])
         nivel_actividad_fisica = fake.random_element(['Bajo', 'Moderado', 'Alto'])
         estilo_vida = fake.random_element(['Sedentario', 'Activo', 'Muy activo'])
@@ -155,7 +170,7 @@ def generar_datos_clientes_psicograficos(num_registros):
 
         # Crear diccionario con datos
         dato_psicografico = {
-            'id_cliente': id_cliente,
+            # 'id_cliente': id_cliente,
             'intereses_deportivos': intereses_deportivos,
             'nivel_actividad_fisica': nivel_actividad_fisica,
             'estilo_vida': estilo_vida,
@@ -165,8 +180,8 @@ def generar_datos_clientes_psicograficos(num_registros):
 
         # Insertar datos en la base de datos
         query = """INSERT INTO clientes_psicograficos 
-                   (id_cliente, intereses_deportivos, nivel_actividad_fisica, estilo_vida, valores_creencias, personalidad) 
-                   VALUES (%(id_cliente)s, %(intereses_deportivos)s, %(nivel_actividad_fisica)s, %(estilo_vida)s, %(valores_creencias)s, %(personalidad)s)"""
+                   (intereses_deportivos, nivel_actividad_fisica, estilo_vida, valores_creencias, personalidad) 
+                   VALUES (%(intereses_deportivos)s, %(nivel_actividad_fisica)s, %(estilo_vida)s, %(valores_creencias)s, %(personalidad)s)"""
         
         try:
             cursor.execute(query, dato_psicografico)
@@ -189,7 +204,7 @@ def generar_datos_adicionales(num_registros):
     
     for _ in range(num_registros):
         # Generar datos adicionales
-        id_cliente = fake.random_int(min=1, max=1000)
+        # id_cliente = fake.random_int(min=1, max=1000)
         numero_identificacion_personal = fake.random_int(min=1000000000, max=9999999999)
         # foto_perfil = fake.binary(length=1024)
         fecha_registro_cliente = fake.date_between(start_date='-1y', end_date='today')
@@ -198,7 +213,7 @@ def generar_datos_adicionales(num_registros):
 
         # Crear diccionario con datos
         dato_adicional = {
-            'id_cliente': id_cliente,
+            # 'id_cliente': id_cliente,
             'numero_identificacion_personal': numero_identificacion_personal,
             # 'foto_perfil': foto_perfil,
             'fecha_registro_cliente': fecha_registro_cliente,
@@ -208,8 +223,8 @@ def generar_datos_adicionales(num_registros):
 
         # Insertar datos en la base de datos
         query = """INSERT INTO clientes_adicionales 
-                   (id_cliente, numero_identificacion_personal, foto_perfil, fecha_registro_cliente, fecha_ultima_actualizacion, consentimiento_datos_personales) 
-                   VALUES (%(id_cliente)s, %(numero_identificacion_personal)s, %(foto_perfil)s, %(fecha_registro_cliente)s, %(fecha_ultima_actualizacion)s, %(consentimiento_datos_personales)s)"""
+                   (numero_identificacion_personal, fecha_registro_cliente, fecha_ultima_actualizacion, consentimiento_datos_personales) 
+                   VALUES (%(numero_identificacion_personal)s, %(fecha_registro_cliente)s, %(fecha_ultima_actualizacion)s, %(consentimiento_datos_personales)s)"""
         
         try:
             cursor.execute(query, dato_adicional)
@@ -219,17 +234,23 @@ def generar_datos_adicionales(num_registros):
     # Guardar los cambios y cerrar el cursor
     connection.commit()
     cursor.close()
-
+'''
 # Crear las tablas
 crear_tabla(query1)
 crear_tabla(query2)
 crear_tabla(query3)
 
-#eliminar_tabla('clientes_demograficos')
-#eliminar_tabla('clientes_psicograficos')
-#eliminar_tabla('clientes_adicionales')
-
 # Generar datos demográficos
 generar_datos_demograficos(500)
 generar_datos_clientes_psicograficos(100)
 generar_datos_adicionales(100)
+'''
+# Obtener datos de las tablas
+obtener_datos('clientes_demograficos')
+obtener_datos('clientes_psicograficos')
+obtener_datos('clientes_adicionales')
+'''
+eliminar_tabla('clientes_demograficos')
+eliminar_tabla('clientes_psicograficos')
+eliminar_tabla('clientes_adicionales')
+'''
