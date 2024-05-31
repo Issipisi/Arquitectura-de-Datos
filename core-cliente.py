@@ -43,10 +43,10 @@ query3 = """CREATE TABLE IF NOT EXISTS clientes_adicionales (
 
 # Conexión a la base de datos en postgres
 connection = psycopg2.connect(
-    user="postgres",
-    password="1234",
-    host="localhost",
-    port="5432",
+    user="taller2",
+    password="contraseña2024@",
+    host="taller2clientes.postgres.database.azure.com",
+    #port="5432",
     database="core-clientes"
 )
 
