@@ -70,6 +70,22 @@ def eliminar_tabla(tabla):
     finally:
         cursor.close()
 
+# Función para generar ruts
+def generar_rut():
+    # Generar un número aleatorio de 8 dígitos
+    rut = random.randint(1000000, 39999999)
+    
+    # Calcular el dígito verificador
+    suma = 0
+    multiplicador = 2
+    for digito in str(rut)[::-1]:
+        suma += int(digito) * multiplicador
+        multiplicador = multiplicador + 1 if multiplicador < 7 else 2
+    dv = 11 - (suma % 11)
+    dv = 'k' if dv == 10 else '0' if dv == 11 else str(dv)
+    
+    return f"{rut}-{dv}"
+
 # Función que genera datos para la tabla de colaboradores
 '''
 Genera datos ficticios para la tabla 'colaboradores'.
@@ -81,6 +97,7 @@ Returns:
 def generar_datos_colaboradores(cantidad: int):
     cursor = connection.cursor()
     for _ in range(cantidad):
+        rut = generar_rut()
         nombre_completo = fake.name()
         genero = fake.random_element(['M', 'F'])
         edad = fake.random_int(18, 90)
@@ -95,6 +112,7 @@ def generar_datos_colaboradores(cantidad: int):
         
         # Crear diccionario de datos
         datos_colaboradores = {
+            'rut': rut,
             'nombre_completo': nombre_completo,
             'genero': genero,
             'edad': edad,
@@ -110,7 +128,7 @@ def generar_datos_colaboradores(cantidad: int):
 
         # Insertar datos en la tabla
         query = """INSERT INTO colaboradores (nombre_completo, genero, edad, correo_electronico, telefono, direccion_postal, codigo_postal, ciudad, area, cargo, sueldo)
-                    VALUES (%(nombre_completo)s, %(genero)s, %(edad)s, %(correo_electronico)s, %(telefono)s, %(direccion_postal)s, %(codigo_postal)s, %(ciudad)s, %(area)s, %(cargo)s, %(sueldo)s)"""
+                    VALUES (%(rut)s, %(nombre_completo)s, %(genero)s, %(edad)s, %(correo_electronico)s, %(telefono)s, %(direccion_postal)s, %(codigo_postal)s, %(ciudad)s, %(area)s, %(cargo)s, %(sueldo)s)"""
         
         try:
             cursor.execute(query, datos_colaboradores)

@@ -1,3 +1,4 @@
+import datetime
 import psycopg2
 import random
 # import datetime
@@ -13,6 +14,7 @@ query1 = """CREATE TABLE IF NOT EXISTS clientes_demograficos (
     rut VARCHAR(12) UNIQUE NOT NULL,
     nombre_completo VARCHAR(255) NOT NULL,
     genero CHAR(1) NOT NULL,
+    fecha_nacimiento DATE NOT NULL,
     edad INT CHECK (edad >= 18),
     correo_electronico VARCHAR(255) UNIQUE NOT NULL,
     telefono VARCHAR(20),
@@ -88,6 +90,22 @@ def eliminar_tabla(tabla):
     finally:
         cursor.close()
 
+# Función para generar ruts
+def generar_rut():
+    # Generar un número aleatorio de 8 dígitos
+    rut = random.randint(1000000, 39999999)
+    
+    # Calcular el dígito verificador
+    suma = 0
+    multiplicador = 2
+    for digito in str(rut)[::-1]:
+        suma += int(digito) * multiplicador
+        multiplicador = multiplicador + 1 if multiplicador < 7 else 2
+    dv = 11 - (suma % 11)
+    dv = 'k' if dv == 10 else '0' if dv == 11 else str(dv)
+    
+    return f"{rut}-{dv}"
+
 def generar_datos_demograficos(num_registros):
     """
     Genera datos demográficos ficticios para la tabla 'clientes_demograficos'.
@@ -100,35 +118,35 @@ def generar_datos_demograficos(num_registros):
     
     for _ in range(num_registros):
         # Generar datos demográficos
+        rut = generar_rut()
         nombre_completo = fake.name()
         genero = fake.random_element(['M', 'F'])
-        # fecha_nacimiento = fake.date_between(start_date='-44y', end_date='-19y')  # Años entre 1980 y 2005
-        # edad = datetime.date.today().year - fecha_nacimiento.year
-        edad = fake.random_int(min=18, max=90)
+        fecha_nacimiento = fake.date_between(start_date='-44y', end_date='-19y')  # Años entre 1980 y 2005
+        edad = datetime.date.today().year - fecha_nacimiento.year
+        # edad = fake.random_int(min=18, max=90)
         correo_electronico = fake.email()
         telefono = fake.phone_number()
         direccion_postal = fake.address()
         codigo_postal = fake.postcode()
         ciudad = fake.city()
-        pais = fake.country()
+        # pais = fake.country()
         ocupacion = fake.job()
-        nivel_educativo = fake.random_element(['Básica completa', 'Media completa', 'Educación superior', 'Estudiante'])
+        # nivel_educativo = fake.random_element(['Básica completa', 'Media completa', 'Educación superior', 'Estudiante'])
         ingresos = round(random.uniform(1500, 5000), 2)
 
         # Crear diccionario con datos
         dato_demografico = {
+            'rut': rut,
             'nombre_completo': nombre_completo,
             'genero': genero,
-            # 'fecha_nacimiento': fecha_nacimiento,
+            'fecha_nacimiento': fecha_nacimiento,
             'edad': edad,
             'correo_electronico': correo_electronico,
             'telefono': telefono,
             'direccion_postal': direccion_postal,
             'codigo_postal': codigo_postal,
             'ciudad': ciudad,
-            'pais': pais,
             'ocupacion': ocupacion,
-            'nivel_educativo': nivel_educativo,
             'ingresos': ingresos
         }
 
@@ -136,8 +154,8 @@ def generar_datos_demograficos(num_registros):
         query = """INSERT INTO clientes_demograficos 
                    (nombre_completo, genero, edad, correo_electronico, telefono, direccion_postal, 
                     codigo_postal, ciudad, pais, ocupacion, nivel_educativo, ingresos) 
-                   VALUES (%(nombre_completo)s, %(genero)s, %(edad)s, %(correo_electronico)s, %(telefono)s, %(direccion_postal)s,
-                           %(codigo_postal)s, %(ciudad)s, %(pais)s, %(ocupacion)s, %(nivel_educativo)s, %(ingresos)s)"""
+                   VALUES (%(rut)s, %(nombre_completo)s, %(genero)s, %(fecha_nacimiento)s, %(edad)s, %(correo_electronico)s, %(telefono)s, %(direccion_postal)s,
+                           %(codigo_postal)s, %(ciudad)s, %(ocupacion)s, %(ingresos)s)"""
         
         try:
             cursor.execute(query, dato_demografico)
