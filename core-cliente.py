@@ -5,7 +5,7 @@ from faker import Faker
 from faker.providers import address, internet
 
 # Crear instancia de Faker con configuración en español
-fake = Faker('es_ES')
+fake = Faker('es_CL')
 
 # Queries para crear tablas
 query1 = """CREATE TABLE IF NOT EXISTS clientes_demograficos (
