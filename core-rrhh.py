@@ -10,6 +10,7 @@ fake = Faker('es_CL')
 # Query para crear la tabla de colaboradores
 query1 = """CREATE TABLE IF NOT EXISTS colaboradores (
     id_colaborador SERIAL PRIMARY KEY,
+    rut VARCHAR(12) UNIQUE NOT NULL,
     nombre_completo VARCHAR(255) NOT NULL,
     genero CHAR(1) NOT NULL,
     edad INT CHECK (edad >= 18),

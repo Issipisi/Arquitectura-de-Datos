@@ -10,6 +10,7 @@ fake = Faker('es_CL')
 # Queries para crear tablas
 query1 = """CREATE TABLE IF NOT EXISTS clientes_demograficos (
     id_cliente SERIAL PRIMARY KEY,
+    rut VARCHAR(12) UNIQUE NOT NULL,
     nombre_completo VARCHAR(255) NOT NULL,
     genero CHAR(1) NOT NULL,
     edad INT CHECK (edad >= 18),
@@ -18,9 +19,7 @@ query1 = """CREATE TABLE IF NOT EXISTS clientes_demograficos (
     direccion_postal VARCHAR(255),
     codigo_postal VARCHAR(10),
     ciudad VARCHAR(300),
-    pais VARCHAR(300),
     ocupacion VARCHAR(300),
-    nivel_educativo VARCHAR(200),
     ingresos DECIMAL(10, 2)
 )"""
 
