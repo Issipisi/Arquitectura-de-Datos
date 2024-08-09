@@ -10,6 +10,7 @@ fake = Faker('es_CL')
 # Query para crear la tabla de productos
 query1 = """CREATE TABLE IF NOT EXISTS productos (
     id_producto SERIAL PRIMARY KEY,
+    codigo_barra VARCHAR(13) UNIQUE NOT NULL,
     nombre VARCHAR(255) NOT NULL,
     descripcion TEXT,
     marca VARCHAR(255),
@@ -26,8 +27,8 @@ connection = psycopg2.connect(
     user="taller2",
     password="joaquintorres1@",
     host="taller2clientes.postgres.database.azure.com",
-    port="5432",
-    database="core-productos "
+    # port="5432",
+    database="core-productos"
     )
     
 connection.autocommit = True
@@ -71,10 +72,16 @@ def eliminar_tabla(tabla):
 def generar_datos_productos(cantidad):
     cursor = connection.cursor()
     for _ in range(cantidad):
+        codigo_barra = fake.ean13()
         nombre = fake.word()
         descripcion = fake.text()
         marca = fake.company()
-        tipo_deporte = fake.word()
+        tipo_deporte = fake.random_element(['Fútbol', 'Baloncesto', 'Tenis', 'Béisbol', 'Golf', 'Críquet', 'Hockey',
+    'Voleibol', 'Natación', 'Ciclismo', 'Atletismo', 'Rugby', 'Boxeo', 
+    'Artes marciales', 'Esgrima', 'Gimnasia', 'Escalada', 'Esquí', 
+    'Surf', 'Snowboard', 'Patinaje', 'Bádminton', 'Tenis de mesa', 
+    'Bolos', 'Remo', 'Tiro con arco', 'Triatlón', 'Halconería',
+    'Pesca', 'Equitación', 'Carreras de autos', 'Motociclismo', 'Parapente'])
         categoria = fake.random_element(['Fitness', 'Montana', 'Ciclismo', 'Colectivos', 'Nieve', 'Patinaje', 'Combate', 'Precision', 'Acuatico'])
         subcategoria = fake.random_element(['Hombre', 'Mujer', 'Nino', 'Nina', 'Unisex'])
         precio = random.randint(10000, 1000000)
@@ -83,6 +90,7 @@ def generar_datos_productos(cantidad):
 
         # Crear diccionario de datos
         datos_productos = {
+            'codigo_barra': codigo_barra,
             'nombre': nombre,
             'descripcion': descripcion,
             'marca': marca,
@@ -95,8 +103,8 @@ def generar_datos_productos(cantidad):
         }
 
         # Insertar datos en la tabla
-        query = """INSERT INTO productos (nombre, descripcion, marca, tipo_deporte, categoria, subcategoria, precio, stock, proveedor)
-        VALUES (%(nombre)s, %(descripcion)s, %(marca)s, %(tipo_deporte)s, %(categoria)s, %(subcategoria)s, %(precio)s, %(stock)s, %(proveedor)s)"""
+        query = """INSERT INTO productos (codigo_barra, nombre, descripcion, marca, tipo_deporte, categoria, subcategoria, precio, stock, proveedor)
+        VALUES (%(codigo_barra)s, %(nombre)s, %(descripcion)s, %(marca)s, %(tipo_deporte)s, %(categoria)s, %(subcategoria)s, %(precio)s, %(stock)s, %(proveedor)s)"""
 
             
         try:
@@ -107,3 +115,12 @@ def generar_datos_productos(cantidad):
 
     connection.commit()
     cursor.close()
+
+    # Crear la tabla
+crear_tabla(query1)
+
+# Generar datos para la tabla de productos
+generar_datos_productos(30)
+
+#obtener_datos('productos')
+#eliminar_tabla('productos')

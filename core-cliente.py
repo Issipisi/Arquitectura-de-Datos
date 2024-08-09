@@ -8,10 +8,14 @@ from faker.providers import address, internet
 # Crear instancia de Faker con configuración en español
 fake = Faker('es_CL')
 
+# Se crea una segunda instancia de Faker, para poder generar los mismos datos en las categorías que lo necesiten
+fake2 = Faker('es_CL')
+fake2.seed_instance(12345)
+
 # Queries para crear tablas
 query1 = """CREATE TABLE IF NOT EXISTS clientes_demograficos (
     id_cliente SERIAL PRIMARY KEY,
-    rut VARCHAR(12) UNIQUE NOT NULL,
+    rut VARCHAR(12) NOT NULL,
     nombre_completo VARCHAR(255) NOT NULL,
     genero CHAR(1) NOT NULL,
     fecha_nacimiento DATE NOT NULL,
@@ -93,8 +97,7 @@ def eliminar_tabla(tabla):
 # Función para generar ruts
 def generar_rut():
     # Generar un número aleatorio de 8 dígitos
-    rut = random.randint(1000000, 39999999)
-    
+    rut = fake2.random_int(1000000, 39999999)
     # Calcular el dígito verificador
     suma = 0
     multiplicador = 2
@@ -152,8 +155,8 @@ def generar_datos_demograficos(num_registros):
 
         # Insertar datos en la base de datos
         query = """INSERT INTO clientes_demograficos 
-                   (nombre_completo, genero, edad, correo_electronico, telefono, direccion_postal, 
-                    codigo_postal, ciudad, pais, ocupacion, nivel_educativo, ingresos) 
+                   (rut, nombre_completo, genero, fecha_nacimiento, edad, correo_electronico, telefono, direccion_postal, 
+                    codigo_postal, ciudad, ocupacion, ingresos) 
                    VALUES (%(rut)s, %(nombre_completo)s, %(genero)s, %(fecha_nacimiento)s, %(edad)s, %(correo_electronico)s, %(telefono)s, %(direccion_postal)s,
                            %(codigo_postal)s, %(ciudad)s, %(ocupacion)s, %(ingresos)s)"""
         
@@ -251,7 +254,7 @@ def generar_datos_adicionales(num_registros):
     # Guardar los cambios y cerrar el cursor
     connection.commit()
     cursor.close()
-'''
+
 # Crear las tablas
 crear_tabla(query1)
 crear_tabla(query2)
@@ -261,11 +264,15 @@ crear_tabla(query3)
 generar_datos_demograficos(500)
 generar_datos_clientes_psicograficos(100)
 generar_datos_adicionales(100)
+
+
 '''
 # Obtener datos de las tablas
 obtener_datos('clientes_demograficos')
 obtener_datos('clientes_psicograficos')
 obtener_datos('clientes_adicionales')
+
+'''
 '''
 eliminar_tabla('clientes_demograficos')
 eliminar_tabla('clientes_psicograficos')

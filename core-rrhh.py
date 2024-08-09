@@ -127,7 +127,7 @@ def generar_datos_colaboradores(cantidad: int):
         }
 
         # Insertar datos en la tabla
-        query = """INSERT INTO colaboradores (nombre_completo, genero, edad, correo_electronico, telefono, direccion_postal, codigo_postal, ciudad, area, cargo, sueldo)
+        query = """INSERT INTO colaboradores (rut, nombre_completo, genero, edad, correo_electronico, telefono, direccion_postal, codigo_postal, ciudad, area, cargo, sueldo)
                     VALUES (%(rut)s, %(nombre_completo)s, %(genero)s, %(edad)s, %(correo_electronico)s, %(telefono)s, %(direccion_postal)s, %(codigo_postal)s, %(ciudad)s, %(area)s, %(cargo)s, %(sueldo)s)"""
         
         try:
@@ -139,9 +139,11 @@ def generar_datos_colaboradores(cantidad: int):
     cursor.close()
 
 # Crear la tabla
-# crear_tabla(query1)
+crear_tabla(query1)
 
 # Generar datos para la tabla de colaboradores
-# generar_datos_colaboradores(30)
+generar_datos_colaboradores(30)
 
-obtener_datos('colaboradores')
+#obtener_datos('colaboradores')
+
+#eliminar_tabla('colaboradores')

@@ -1,4 +1,5 @@
-import psycopg2
+
+import mysql.connector
 import random
 # import datetime
 from faker import Faker
@@ -7,9 +8,9 @@ from faker.providers import address, internet
 # Crear instancia de Faker con configuración en español
 fake = Faker('es_CL')
 
-# Query para crear la tabla de proveedores con los campos id_proveedor, nombre, nombre contacto, correo contacto, teléfono contacto, dirección tipo de producto
+# Query para crear la tabla de proveedores con los campos id_proveedor, nombre, nombre contacto, correo contacto, teléfono contacto, dirección tipo de producto en mysql
 query1 = """CREATE TABLE IF NOT EXISTS proveedores (
-    id_proveedor SERIAL PRIMARY KEY,
+    id_proveedor INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL,
     nombre_contacto VARCHAR(255) NOT NULL,
     correo_contacto VARCHAR(255) UNIQUE NOT NULL,
@@ -17,14 +18,13 @@ query1 = """CREATE TABLE IF NOT EXISTS proveedores (
     direccion VARCHAR(255),
     tipo_producto VARCHAR(500)
 )"""
-
-# Conexión a la base de datos en postgres
-connection = psycopg2.connect(
-    user="taller2",
-    password="joaquintorres1@",
-    host="taller2clientes.postgres.database.azure.com",
-    port="5432",
-    database="core-proveedores"
+# Conexión a la base de datos en MySql
+connection = mysql.connector.connect(
+        user='taller2',
+        password='joaquintorres1@',
+        host='taller2mysql.mysql.database.azure.com',
+        #port='tu_puerto',  # Opcional, el predeterminado es 3306
+        database='core-proveedores'
     )
     
 connection.autocommit = True
@@ -107,13 +107,13 @@ def generar_datos_proveedores(cantidad: int):
 
 
 # Crear la tabla
-# crear_tabla(query1)
+crear_tabla(query1)
 
 # Generar datos para la tabla de proveedores
-# generar_datos_proveedores(30)
+generar_datos_proveedores(30)
 
 # Obtener datos de la tabla de proveedores
-# obtener_datos('proveedores')
+#obtener_datos('proveedores')
 
 # Eliminar la tabla de proveedores
 # eliminar_tabla('proveedores')

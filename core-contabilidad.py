@@ -11,13 +11,13 @@ fake = Faker('es_CL')
 
 query1 = """CREATE TABLE IF NOT EXISTS contabilidad (
     id_transaccion SERIAL PRIMARY KEY,
-    Fecha DATE NOT NULL,
-    Descripcion VARCHAR(100) NOT NULL,
-    Monto DECIMAL NOT NULL,
-    Moneda VARCHAR(5) NOT NULL,
+    fecha DATE NOT NULL,
+    descripcion VARCHAR(100) NOT NULL,
+    monto DECIMAL NOT NULL,
+    moneda VARCHAR(5) NOT NULL,
     id_cuenta_origen INT NOT NULL,
     id_cuenta_destino INT NOT NULL,
-    Tipo_transaccion VARCHAR(20) NOT NULL
+    tipo_transaccion VARCHAR(20) NOT NULL
 )"""
 
 # Conexión a la base de datos en postgres
@@ -25,7 +25,7 @@ connection = psycopg2.connect(
     user="taller2",
     password="joaquintorres1@",
     host="taller2clientes.postgres.database.azure.com",
-    port="5432",
+    # port="5432",
     database="core-contabilidad"
 )
 
@@ -90,7 +90,7 @@ def generar_datos_contabilidad(cantidad):
         }
 
         # insertar datos en la tabla
-        query = """INSERT INTO contabilidad (Fecha, Descripcion, Monto, Moneda, id_cuenta_origen, id_cuenta_destino, Tipo_transaccion)
+        query = """INSERT INTO contabilidad (fecha, descripcion, monto, moneda, id_cuenta_origen, id_cuenta_destino, tipo_transaccion)
         VALUES (%(fecha)s, %(descripcion)s, %(monto)s, %(moneda)s, %(id_cuenta_origen)s, %(id_cuenta_destino)s, %(tipo_transaccion)s)"""
 
         try:
@@ -103,9 +103,9 @@ def generar_datos_contabilidad(cantidad):
     connection.close()
 
 # Crear la tabla
-# crear_tabla(query)
+crear_tabla(query1)
 
 # Generar datos para la tabla de contabilidad
-# generar_datos_contabilidad(30)
+generar_datos_contabilidad(30)
 
-obtener_datos('contabilidad')
+# obtener_datos('contabilidad')
