@@ -7,10 +7,14 @@ from faker.providers import address, internet
 # Crear instancia de Faker con configuración en español
 fake = Faker('es_CL')
 
+# Se crea una segunda instancia de Faker, para poder generar los mismos datos en las categorías que lo necesiten
+fake3 = Faker('es_CL')
+fake3.seed_instance(54321)
+
 # Query para crear la tabla de productos
 query1 = """CREATE TABLE IF NOT EXISTS productos (
     id_producto SERIAL PRIMARY KEY,
-    codigo_barra VARCHAR(13) UNIQUE NOT NULL,
+    codigo_barra VARCHAR(13) NOT NULL,
     nombre VARCHAR(255) NOT NULL,
     descripcion TEXT,
     marca VARCHAR(255),
@@ -72,7 +76,7 @@ def eliminar_tabla(tabla):
 def generar_datos_productos(cantidad):
     cursor = connection.cursor()
     for _ in range(cantidad):
-        codigo_barra = fake.ean13()
+        codigo_barra = fake3.ean13()
         nombre = fake.word()
         descripcion = fake.text()
         marca = fake.company()
@@ -116,11 +120,11 @@ def generar_datos_productos(cantidad):
     connection.commit()
     cursor.close()
 
-    # Crear la tabla
+# Crear la tabla
 crear_tabla(query1)
 
 # Generar datos para la tabla de productos
-generar_datos_productos(30)
+generar_datos_productos(150)
 
 #obtener_datos('productos')
 #eliminar_tabla('productos')

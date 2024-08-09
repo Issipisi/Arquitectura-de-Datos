@@ -12,6 +12,9 @@ fake = Faker('es_CL')
 fake2 = Faker('es_CL')
 fake2.seed_instance(12345)
 
+fake3 = Faker('es_CL')
+fake3.seed_instance(54321)
+
 # Conexión a la base de datos en postgres
 connection = psycopg2.connect(
     user="taller2",
@@ -92,7 +95,7 @@ def generar_datos_ventas(cantidad):
     cursor = connection.cursor()
     for _ in range(cantidad):
         rut = generar_rut()
-        codigo_barra = fake.ean13()
+        codigo_barra = fake3.ean13()
         fecha_venta = fake.date()
         hora_venta = fake.time()
         cantidad = random.randint(1, 10)
@@ -132,7 +135,7 @@ def generar_datos_ventas(cantidad):
 crear_tabla(query1)
 
 # Generar datos para la tabla de ventas
-generar_datos_ventas(30)
+generar_datos_ventas(150)
 
 #obtener_datos('ventas')
 
